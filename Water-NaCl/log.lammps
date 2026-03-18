@@ -1,0 +1,245 @@
+LAMMPS (7 Feb 2024 - Update 1)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+#Water + NaCl
+
+#Initialization
+units real
+dimension 3 # 3D
+atom_style full
+boundary p p p
+
+#System definition
+read_data ahmed_water_nacl.data
+Reading data file ...
+  orthogonal box = (0.2705 -0.334499 -0.259999) to (25.2705 24.665501 24.740001)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  1356 atoms
+  scanning bonds ...
+  2 = max bonds/atom
+  scanning angles ...
+  1 = max angles/atom
+  reading bonds ...
+  900 bonds
+  reading angles ...
+  455 angles
+Finding 1-2 1-3 1-4 neighbors ...
+  special bond factors lj:    0        0        0       
+  special bond factors coul:  0        0        0       
+     2 = max # of 1-2 neighbors
+     2 = max # of 1-3 neighbors
+     4 = max # of 1-4 neighbors
+     6 = max # of special neighbors
+  special bonds CPU = 0.001 seconds
+  read_data CPU = 0.016 seconds
+
+#Settings
+pair_style lj/cut/coul/long 2.5 #LJ + long-range Coulomb for 2.5 angstroms
+kspace_style pppm 1.0e-4 #coulomb interactions beyond the cutoff
+
+set type 1 charge -1.0000 # Set charge (for Cl)
+Setting atom values ...
+  9 settings made for charge
+set type 2 charge 0.4238 # Set charge (for H)
+Setting atom values ...
+  892 settings made for charge
+set type 3 charge 1.0000 # Set charge (for Na)
+Setting atom values ...
+  9 settings made for charge
+set type 4 charge -0.8476 # Set charge (for O)
+Setting atom values ...
+  446 settings made for charge
+pair_coeff 1 1 0.0719 4.4200 # Sets LJ values epsilon, sigma (for Cl)
+pair_coeff 2 2 0.0000 0.0000 # Sets LJ values epsilon, sigma (for H)
+pair_coeff 3 3 0.0313 2.6000 # Sets LJ values epsilon, sigma (for Na)
+pair_coeff 4 4 0.1553 3.1660 # Sets LJ values epsilon, sigma (for O)
+
+bond_style harmonic
+bond_coeff 1 450 0.9572    #add comments .
+angle_style harmonic
+angle_coeff * 55.0 109.47
+
+#Monitoring
+minimize 1.0e-4 1.0e-6 100 1000
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 1.1048881
+  grid = 60 60 60
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.031255496
+  estimated relative force accuracy = 9.4124999e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 328509 216000
+Generated 6 of 6 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4.5
+  ghost atom cutoff = 4.5
+  binsize = 2.25, bins = 12 12 12
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut/coul/long, perpetual
+      attributes: half, newton on
+      pair build: half/bin/newton
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 39.34 | 39.34 | 39.34 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0              1.0719108e+08  3933.6717      1.0719502e+08  1.8816914e+09
+        41   0             -6305.8393      375.314       -5930.5253     -24566.328    
+Loop time of 4.48567 on 1 procs for 41 steps with 1356 atoms
+
+102.4% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+      107195017.124146  -5930.30283946136  -5930.52526038706
+  Force two-norm initial, final = 1.7356858e+09 543.74863
+  Force max component initial, final = 7.3419052e+08 81.122309
+  Final line search alpha, max atom move = 9.1062227e-07 7.3871781e-05
+  Iterations, force evaluations = 41 149
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.045371   | 0.045371   | 0.045371   |   0.0 |  1.01
+Bond    | 0.0080307  | 0.0080307  | 0.0080307  |   0.0 |  0.18
+Kspace  | 4.4184     | 4.4184     | 4.4184     |   0.0 | 98.50
+Neigh   | 0.0047238  | 0.0047238  | 0.0047238  |   0.0 |  0.11
+Comm    | 0.0032098  | 0.0032098  | 0.0032098  |   0.0 |  0.07
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.005964   |            |       |  0.13
+
+Nlocal:           1356 ave        1356 max        1356 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           1887 ave        1887 max        1887 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          22582 ave       22582 max       22582 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 22582
+Ave neighs/atom = 16.653392
+Ave special neighs/atom = 2.0132743
+Neighbor list builds = 2
+Dangerous builds = 0
+
+
+group water type 2 4
+1338 atoms in group water
+fix 1 water shake 0.0001 10 1000 b 1 a 1 # (b 1 - bond type 1) (a 1 - angle type 1)
+Finding SHAKE clusters ...
+       0 = # of size 2 clusters
+     446 = # of size 3 clusters
+       0 = # of size 4 clusters
+       0 = # of frozen angles
+  find clusters CPU = 0.001 seconds
+fix 2 all npt temp 300 300 100 aniso 1 1 1000 #Sets NPT with temperature and anisotropic barostat (allows box to change dimensions independently for target pressure)
+
+
+thermo_style custom step temp etotal vol density
+thermo 200
+
+velocity all create 250.0 12345 mom yes rot yes #(mom yes - removes net linear momentum) (rot yes - removes net rotation)
+
+reset_timestep 0
+dump traj all atom 100 dump_water_nacl.lammpstrj
+
+#Run
+timestep 1.0
+run 5000
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 1.1048881
+  grid = 60 60 60
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.031255496
+  estimated relative force accuracy = 9.4124999e-05
+  using double precision FFTW3
+  3d grid and FFT values/proc = 328509 216000
+Generated 6 of 6 mixed pair_coeff terms from geometric mixing rule
+SHAKE stats (type/ave/delta/count) on step 0
+Bond:   1   0.975827  0.189171         892
+Per MPI rank memory allocation (min/avg/max) = 39.09 | 39.09 | 39.09 Mbytes
+   Step          Temp          TotEng         Volume        Density    
+         0   250           -5352.3347      15625          0.90979464   
+       200   483.36063     -4889.1706      14566.307      0.97591937   
+       400   421.37959     -5307.1189      13758.039      1.0332534    
+       600   378.04017     -6016.8294      12950.731      1.0976632    
+       800   337.94701     -6391.2829      12297.077      1.1560098    
+SHAKE stats (type/ave/delta/count) on step 1000
+Bond:   1   0.957158  1.82664e-05      892
+      1000   315.38555     -6457.6209      11805.263      1.2041698    
+      1200   318.97758     -6775.808       11489.276      1.2372878    
+      1400   301.97512     -6677.0637      11273.815      1.2609345    
+      1600   303.96163     -6825.3928      11050.079      1.2864651    
+      1800   302.53918     -6604.4788      11008.765      1.291293     
+SHAKE stats (type/ave/delta/count) on step 2000
+Bond:   1   0.957211  3.34323e-05      892
+      2000   306.63394     -6933.4078      11040.476      1.2875841    
+      2200   306.28212     -6772.2813      11049.505      1.286532     
+      2400   308.45387     -7045.5499      11027.466      1.2891031    
+      2600   316.76783     -6783.725       10996.83       1.2926944    
+      2800   305.57671     -6760.9349      10959.822      1.2970595    
+SHAKE stats (type/ave/delta/count) on step 3000
+Bond:   1   0.957181  2.91384e-05      892
+      3000   310.71517     -6618.0886      10887.533      1.3056715    
+      3200   300.71569     -6804.4887      10854.728      1.3096175    
+      3400   309.5272      -6837.8924      10809.058      1.3151508    
+      3600   299.31584     -6709.1873      10837.741      1.3116701    
+      3800   325.53825     -6855.8025      10916.075      1.3022576    
+SHAKE stats (type/ave/delta/count) on step 4000
+Bond:   1   0.957181  6.26423e-05      892
+      4000   315.59376     -6801.9793      10883.188      1.3061928    
+      4200   308.66228     -6962.7372      10852.277      1.3099132    
+      4400   318.59874     -6945.1754      10791.497      1.317291     
+      4600   307.65343     -6956.3982      10770.543      1.3198537    
+      4800   307.05295     -6639.2604      10855.721      1.3094977    
+SHAKE stats (type/ave/delta/count) on step 5000
+Bond:   1   0.957188  5.4767e-05       892
+      5000   304.15677     -6766.5786      10773.866      1.3194467    
+Loop time of 300.768 on 1 procs for 5000 steps with 1356 atoms
+
+Performance: 1.436 ns/day, 16.709 hours/ns, 16.624 timesteps/s, 22.542 katom-step/s
+101.5% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 2.0005     | 2.0005     | 2.0005     |   0.0 |  0.67
+Bond    | 0.22745    | 0.22745    | 0.22745    |   0.0 |  0.08
+Kspace  | 150.38     | 150.38     | 150.38     |   0.0 | 50.00
+Neigh   | 0.50788    | 0.50788    | 0.50788    |   0.0 |  0.17
+Comm    | 0.14223    | 0.14223    | 0.14223    |   0.0 |  0.05
+Output  | 0.062453   | 0.062453   | 0.062453   |   0.0 |  0.02
+Modify  | 147.32     | 147.32     | 147.32     |   0.0 | 48.98
+Other   |            | 0.1251     |            |       |  0.04
+
+Nlocal:           1356 ave        1356 max        1356 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           2273 ave        2273 max        2273 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          32331 ave       32331 max       32331 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 32331
+Ave neighs/atom = 23.84292
+Ave special neighs/atom = 2.0132743
+Neighbor list builds = 182
+Dangerous builds = 0
+
+write_data water_nacl_full_test.data nocoeff
+System init for write_data ...
+PPPM initialization ...
+  using 12-bit tables for long-range coulomb (src/kspace.cpp:342)
+  G vector (1/distance) = 1.1104806
+  grid = 54 54 54
+  stencil order = 5
+  estimated absolute RMS force accuracy = 0.034831484
+  estimated relative force accuracy = 0.00010489398
+  using double precision FFTW3
+  3d grid and FFT values/proc = 250047 157464
+Generated 6 of 6 mixed pair_coeff terms from geometric mixing rule
+Total wall time: 0:05:05
